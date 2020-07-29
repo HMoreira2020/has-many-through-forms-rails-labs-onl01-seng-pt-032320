@@ -6,19 +6,19 @@
     <%end%><br>
 
 <h4>comments:</h4> 
-    <% @post.comments.each do |comment| %>
-        <%= comment.content %> - <%= link_to comment.user.username, user_path(comment.user) %> 
+    <% @post.unique_users.each do |user| %>
+        <%= user.username %> says: <%= user.comments.first.content %>
     <%end%> 
         
     
 <h4>Users who have commented on this post:</h4>
-    <% @post.unique_users do |user| %>
+    <% @post.unique_users.each do |user| %>
         <%= link_to user.username, user_path(user) %> 
     <%end%> 
 
 <h2>Comment:</h2>
     
-<% form_for @post.comments.build do |f| %> 
+<%= form_for @post.comments.build do |f| %> 
     <%= f.hidden_field :post_id, value: @post.id %>
     <%= f.label :content %> 
     <%= f.text_area :content %> 
@@ -26,11 +26,12 @@
     <%= f.collection_select :user_id, User.all, :id, :username, include_blank: "Choose a User" %> 
     <br> 
     Create User:
-    <%= f.fields_for :user, @post.comments.last.build_user do |user_fields|%> 
+    <%= f.fields_for :user, User.new do |user_fields|%> 
     <br>
-    Username: 
+    <%= user_fields.label :username %>
     <%= user_fields.text_field :username %> 
-    Email: 
+    
+    <%= user_fields.label :email %>
     <%= user_fields.text_field :email %> 
     <%end%> 
 
